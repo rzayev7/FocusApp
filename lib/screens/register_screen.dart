@@ -17,7 +17,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _signUp() {
     if (_formKey.currentState!.validate()) {
-      Navigator.pushNamed(context, '/features');
+      Navigator.pushReplacementNamed(context, '/dashboard');
     } else {
       showDialog(
         context: context,
