@@ -15,9 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onLoginPressed() {
     if (_formKey.currentState!.validate()) {
       // If valid, proceed to next screen or do login logic
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login successful (placeholder)")),
-      );
+      Navigator.pushReplacementNamed(context, '/dashboard');
     } else {
       // If invalid, show an alert or a message
       showDialog(
