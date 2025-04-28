@@ -13,23 +13,34 @@ class SettingsScreen extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
-                  'Settings ⚙️',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Settings ⚙️',
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
                 Column(
                   children: [
                     GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/settings');
-                        },
-                        child: const CircleAvatar(
-                          radius: 20,
-                          backgroundImage: AssetImage('assets/images/logo.png'),
-                        ),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/settings');
+                      },
+                      child: const CircleAvatar(
+                        radius: 20,
+                        backgroundImage: AssetImage('assets/images/logo.png'),
                       ),
-
+                    ),
                     TextButton(
                       onPressed: () {
                         // Profile picture update logic here
