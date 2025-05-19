@@ -9,8 +9,29 @@ import 'package:focus_app_project/screens/task_detail_screen.dart';
 import 'package:focus_app_project/screens/home_screen.dart';
 import 'package:focus_app_project/screens/addTask_screen.dart';
 import 'package:focus_app_project/screens/setting_screen.dart';
-void main() {
-  runApp(const FocusApp());
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/auth_provider.dart';
+import 'providers/task_provider.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.dumpErrorToConsole(details);
+    print('Caught Flutter error: ${details.exception}');
+    print('Stack trace: ${details.stack}');
+  };
+  await Firebase.initializeApp();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
+      ],
+      child: const FocusApp(),
+    ),
+  );
 }
 
 class FocusApp extends StatelessWidget {
@@ -22,29 +43,36 @@ class FocusApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'FocusApp',
       theme: ThemeData(
-        primaryColor: AppColors.primaryColor,
-        scaffoldBackgroundColor: AppColors.backgroundColor,
+        primaryColor: Colors.blue,
+        scaffoldBackgroundColor: Colors.white,
         fontFamily: 'Poppins',
       ),
+      initialRoute: '/',
       routes: {
-      '/': (context) => const HomeScreen(), // ✅ Add this!
-      '/add_task': (context) => const AddTaskScreen(),
-      '/login': (context) => const LoginScreen(),
-      '/register': (context) => const RegisterScreen(),
-      '/dashboard': (context) => const DashboardScreen(),
-      '/settings': (context) => const SettingsScreen(),
-      '/category': (context) {
-        final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-        return CategoryTaskScreen(
-          categoryName: args['label'],
-          allTasks: args['tasks'],
-        );
+        '/': (context) => const HomeScreen(),
+        '/add_task': (context) => const AddTaskScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/dashboard': (context) => const DashboardScreen(),
+        '/settings': (context) => const SettingsScreen(),
+        '/task_detail': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments;
+          print('Route /task_detail called with args: ' + args.toString());
+          if (args == null || args is! TaskModel) {
+            return const Scaffold(body: Center(child: Text('No task provided')));
+          }
+          return TaskDetailScreen(task: args as TaskModel);
+        },
       },
-      '/task_detail': (context) {
-        final task = ModalRoute.of(context)!.settings.arguments as TaskModel;
-        return TaskDetailScreen(task: task);
+      onGenerateRoute: (settings) {
+        print('onGenerateRoute called for: \\${settings.name}');
+        return null; // Let onUnknownRoute handle it
       },
-},
-);
-}
+      onUnknownRoute: (settings) => MaterialPageRoute(
+        builder: (context) => const Scaffold(
+          body: Center(child: Text('Unknown route')),
+        ),
+      ),
+    );
+  }
 }

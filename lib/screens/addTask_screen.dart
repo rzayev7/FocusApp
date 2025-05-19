@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:focus_app_project/models/task_model.dart';
+import 'package:focus_app_project/services/task_service.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -13,6 +17,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   DateTime _selectedDate = DateTime.now();
   bool _reminder = true;
+  String _selectedCategory = 'General';
 
   void _pickTime() async {
     final picked = await showTimePicker(
@@ -20,27 +25,38 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       initialTime: _selectedTime,
     );
     if (picked != null) {
-      setState(() {
-        _selectedTime = picked;
-      });
+      setState(() => _selectedTime = picked);
     }
   }
 
   void _pickDate(DateTime date) {
-    setState(() {
-      _selectedDate = date;
-    });
+    setState(() => _selectedDate = date);
   }
 
-  void _submitTask() {
-    // Save or submit logic
-    Navigator.pop(context); // Return to previous screen
+  Future<void> _submitTask() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final docId = FirebaseFirestore.instance.collection('tasks').doc().id;
+
+    final task = TaskModel(
+      id: docId,
+      title: _taskController.text.trim(),
+      tag: _selectedCategory,
+      date: DateFormat('dd MMM yyyy').format(_selectedDate),
+      subtasks: [],
+      isDone: false,
+      createdBy: user.uid,
+      createdAt: Timestamp.now(),
+    );
+
+    await TaskService.addTask(task);
+    if (mounted) Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final formattedTime = _selectedTime.format(context);
-    final formattedDate = DateFormat('EEEE, dd MMM yyyy').format(_selectedDate);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -54,16 +70,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('What are you planning\nto do today? 🚀',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            const Text(
+              'What are you planning\nto do today? 🚀',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 32),
 
             const Text('Task'),
             TextField(
               controller: _taskController,
-              decoration: const InputDecoration(
-                hintText: 'Lorem ipsum dolor',
-              ),
+              decoration: const InputDecoration(hintText: 'e.g., Read 10 pages'),
             ),
             const SizedBox(height: 24),
 
@@ -82,12 +98,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(DateFormat('a').format(DateTime.now()).toUpperCase()), // AM/PM
+                Text(DateFormat('a').format(DateTime.now()).toUpperCase()),
                 const SizedBox(width: 12),
                 Switch(
                   value: _reminder,
                   onChanged: (val) => setState(() => _reminder = val),
-                )
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -98,10 +114,31 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               lastDate: DateTime(2030),
               onDateChanged: _pickDate,
             ),
+            const SizedBox(height: 24),
+
+            const Text('Category'),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              value: _selectedCategory,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
+              items: ['General', 'Health', 'Work', 'Mental Health', 'Others']
+                  .map((category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => _selectedCategory = value);
+                }
+              },
+            ),
 
             const Spacer(),
 
-            // Done button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

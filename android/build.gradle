@@ -1,3 +1,23 @@
+// File: android/build.gradle
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // ✅ Required for Firebase
+        classpath 'com.android.tools.build:gradle:8.2.1'
+
+
+    }
+}
+
+plugins {
+    // ✅ Makes the Firebase plugin available to app-level build.gradle
+    id 'com.google.gms.google-services' version '4.4.2' apply false
+}
+
 allprojects {
     repositories {
         google()

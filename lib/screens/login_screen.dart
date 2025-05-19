@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,25 +13,79 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _onLoginPressed() {
+  void _onLoginPressed() async {
     if (_formKey.currentState!.validate()) {
-      // If valid, proceed to next screen or do login logic
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else {
-      // If invalid, show an alert or a message
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Invalid Form'),
-          content: const Text('Please fix the errors before logging in.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
+      try {
+        final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          debugPrint('✅ Logged in as: ${user.email}');
+        }
+
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, '/dashboard');
+        }
+      } on FirebaseAuthException catch (e) {
+        debugPrint('FirebaseAuthException: ${e.code}');
+
+        String message;
+        switch (e.code) {
+          case 'user-not-found':
+            message = 'No account found for that email.';
+            break;
+          case 'wrong-password':
+            message = 'The password is incorrect.';
+            break;
+          case 'invalid-email':
+            message = 'Please enter a valid email.';
+            break;
+          case 'network-request-failed':
+            message = 'Network error. Check your internet connection.';
+            break;
+          case 'too-many-requests':
+            message = 'Too many login attempts. Please try again later.';
+            break;
+          default:
+            message = 'Login failed (${e.code}). Please try again.';
+        }
+
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: const Text('Login Error'),
+              content: Text(message),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
+          );
+        }
+      } catch (e) {
+        debugPrint('Other error: $e');
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: const Text('Error'),
+              content: const Text('An unexpected error occurred.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -41,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
         title: const Text('Log In'),
         titleTextStyle: const TextStyle(
           fontSize: 20,
-          color: const Color.fromARGB(255, 37, 35, 83),
+          color: Color.fromARGB(255, 37, 35, 83),
           fontWeight: FontWeight.bold,
         ),
         backgroundColor: Colors.transparent,
@@ -67,13 +122,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
-
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
                     hintText: 'Email',
                     hintStyle: const TextStyle(color: Colors.grey),
-                    fillColor: const Color(0xFFF5F6FA), // Light purple/gray fill
+                    fillColor: const Color(0xFFF5F6FA),
                     filled: true,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -95,7 +149,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-
                 TextFormField(
                   controller: _passwordController,
                   decoration: InputDecoration(
@@ -124,7 +177,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 20),
-
                 SizedBox(
                   width: double.infinity,
                   height: 58,
@@ -138,18 +190,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: _onLoginPressed,
                     child: const Text(
                       'Log In',
-                      style: TextStyle(fontSize: 18, color: Colors.white,fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-                const SizedBox(height:16),
-
+                const SizedBox(height: 16),
                 TextButton(
                   onPressed: () {
-                    // TODO: forgotten password action here
+                    // TODO: forgotten password logic
                   },
                   child: Text(
-                    'Forgotten your password ?',
+                    'Forgotten your password?',
                     style: TextStyle(
                       color: const Color.fromARGB(255, 37, 35, 83),
                       fontSize: 20,
@@ -157,8 +208,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // Divider with "Or sign in with"
                 Row(
                   children: [
                     Expanded(child: Divider(color: Colors.grey[400])),
@@ -173,55 +222,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-
-                // Social Login Images Row with extra margin
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 56.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      InkWell(
-                        onTap: () {
-                        },
-                        child: Image.asset(
-                          'assets/images/apple-black-logo.png',
-                          width: 50,
-                          height: 50,
-                        ),
-                      ),
+                      Image.asset('assets/images/apple-black-logo.png', width: 50, height: 50),
                       const SizedBox(width: 24),
-                      InkWell(
-                        onTap: () {
-                        },
-                        child: Image.asset(
-                          'assets/images/search.png',
-                          width: 50,
-                          height: 50,
-                        ),
-                      ),
+                      Image.asset('assets/images/search.png', width: 50, height: 50),
                       const SizedBox(width: 24),
-                      InkWell(
-                        onTap: () {
-                        },
-                        child: Image.asset(
-                          'assets/images/facebook.png',
-                          width: 50,
-                          height: 50,
-                        ),
-                      ),
+                      Image.asset('assets/images/facebook.png', width: 50, height: 50),
                     ],
                   ),
                 ),
                 const SizedBox(height: 32),
-
-                // "Don't have an account? Create an Account"
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Don't have an account? ",
-                      style: TextStyle(fontSize: 14, color: Colors.black),
-                    ),
+                    const Text("Don't have an account? ", style: TextStyle(fontSize: 14, color: Colors.black)),
                     GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, '/register');

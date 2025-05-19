@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -15,15 +18,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _signUp() {
-    if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else {
+  void _signUp() async {
+  if (_formKey.currentState!.validate()) {
+    try {
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      Navigator.pushReplacementNamed(context, '/login');
+    } on FirebaseAuthException catch (e) {
+      String message = 'Registration failed';
+      if (e.code == 'email-already-in-use') message = 'Email is already in use.';
+      if (e.code == 'invalid-email') message = 'Email is not valid.';
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Invalid Form'),
-          content: const Text('Please check your inputs.'),
+          title: const Text('Error'),
+          content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -34,6 +45,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     }
   }
+}
+
 
   Future<void> _pickBirthday() async {
     final now = DateTime.now();

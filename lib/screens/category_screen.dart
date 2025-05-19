@@ -135,6 +135,7 @@ class _TaskRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        print('Navigating to /task_detail from category with: ' + (task != null ? task.title : 'null'));
         Navigator.pushNamed(
           context,
           '/task_detail',
