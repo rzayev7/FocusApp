@@ -24,8 +24,16 @@ class TaskService {
     await _firestore.collection('tasks').doc(taskId).delete();
   }
 
-  static Future<void> updateTaskStatus(String taskId, bool isDone) async {
-    await _firestore.collection('tasks').doc(taskId).update({'isDone': isDone});
+  static Future<void> updateTaskStatus(TaskModel task, bool isDone) async {
+    await _firestore.collection('tasks').doc(task.id).update({
+      'isDone': isDone,
+      'title': task.title,
+      'tag': task.tag,
+      'date': task.date,
+      'subtasks': task.subtasks ?? [],
+      'createdBy': task.createdBy,
+      'createdAt': task.createdAt,
+    });
   }
 
   static Future<void> updateTask(TaskModel task) async {
@@ -35,6 +43,8 @@ class TaskService {
       'date': task.date,
       'subtasks': task.subtasks ?? [],
       'isDone': task.isDone,
+      'createdBy': task.createdBy,
+      'createdAt': task.createdAt,
     });
   }
 }

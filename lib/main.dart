@@ -9,11 +9,13 @@ import 'package:focus_app_project/screens/task_detail_screen.dart';
 import 'package:focus_app_project/screens/home_screen.dart';
 import 'package:focus_app_project/screens/addTask_screen.dart';
 import 'package:focus_app_project/screens/setting_screen.dart';
+import 'package:focus_app_project/screens/change_password_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/task_provider.dart';
+import 'providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +30,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: const FocusApp(),
     ),
@@ -46,7 +49,15 @@ class FocusApp extends StatelessWidget {
         primaryColor: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'Poppins',
+        brightness: Brightness.light,
       ),
+      darkTheme: ThemeData(
+        primaryColor: Colors.blue,
+        scaffoldBackgroundColor: Colors.black,
+        fontFamily: 'Poppins',
+        brightness: Brightness.dark,
+      ),
+      themeMode: Provider.of<ThemeProvider>(context).themeMode,
       initialRoute: '/',
       routes: {
         '/': (context) => const HomeScreen(),
@@ -55,6 +66,7 @@ class FocusApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/dashboard': (context) => const DashboardScreen(),
         '/settings': (context) => const SettingsScreen(),
+        '/change_password': (context) => const ChangePasswordScreen(),
         '/task_detail': (context) {
           final args = ModalRoute.of(context)!.settings.arguments;
           print('Route /task_detail called with args: ' + args.toString());

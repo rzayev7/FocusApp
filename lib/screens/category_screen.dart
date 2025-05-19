@@ -21,11 +21,11 @@ class CategoryTaskScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(categoryName),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         foregroundColor: Colors.black,
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

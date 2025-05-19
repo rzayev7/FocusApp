@@ -81,11 +81,11 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
         title: const Text('Edit Task'),
         actions: [
           IconButton(
@@ -107,21 +107,32 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     onChanged: _isSaving ? null : (val) {
                       if (val != null) setState(() => _isDone = val);
                     },
+                    activeColor: Theme.of(context).colorScheme.secondary,
                   ),
                   const SizedBox(width: 8),
-                  Text(_isDone ? 'Task is done' : 'Task is not done'),
+                  Text(
+                    _isDone ? 'Task is done' : 'Task is not done',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                    ),
+                  ),
                 ],
               ),
               const Text('Description:', style: TextStyle(fontSize: 16)),
               const SizedBox(height: 8),
               TextField(
                 controller: _titleController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   filled: true,
-                  fillColor: Color(0xFFEFEFEF),
+                  fillColor: Theme.of(context).brightness == Brightness.dark ? Colors.grey[900] : Color(0xFFEFEFEF),
                   border: OutlineInputBorder(),
+                  hintText: 'Enter task description',
+                  hintStyle: TextStyle(color: Colors.grey[500]),
                 ),
                 enabled: !_isSaving,
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                ),
               ),
               const SizedBox(height: 24),
               const Text('Date', style: TextStyle(fontSize: 16)),
@@ -132,10 +143,15 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[900] : Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(DateFormat('dd MMM yyyy').format(_selectedDate), style: const TextStyle(fontSize: 16)),
+                  child: Text(
+                    DateFormat('dd MMM yyyy').format(_selectedDate),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -154,8 +170,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 },
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: const Color(0xFFE8E9FF),
+                  fillColor: Theme.of(context).brightness == Brightness.dark ? Colors.grey[900] : Color(0xFFE8E9FF),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                dropdownColor: Theme.of(context).brightness == Brightness.dark ? Colors.grey[900] : null,
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                 ),
               ),
               const Spacer(),
@@ -164,7 +184,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 child: ElevatedButton(
                   onPressed: _isSaving ? null : _saveTask,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -172,7 +192,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   ),
                   child: _isSaving
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Save', style: TextStyle(fontSize: 16)),
+                      : Text('Save', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white)),
                 ),
               ),
               const SizedBox(height: 12),
@@ -181,12 +201,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 child: OutlinedButton(
                   onPressed: _isSaving ? null : () => Navigator.pop(context),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.black),
+                    side: BorderSide(color: Theme.of(context).colorScheme.secondary),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: const Text('Back'),
+                  child: Text('Back', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).colorScheme.secondary)),
                 ),
               ),
             ],
