@@ -61,6 +61,22 @@ class DashboardScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.calendar_today),
+            tooltip: 'Calendar',
+            onPressed: () {
+              Navigator.pushNamed(context, '/calendar');
+            },
+            color: Theme.of(context).iconTheme.color,
+          ),
+          IconButton(
+            icon: const Icon(Icons.check_circle_outline),
+            tooltip: 'Completed Tasks',
+            onPressed: () {
+              Navigator.pushNamed(context, '/completed_tasks');
+            },
+            color: Theme.of(context).iconTheme.color,
+          ),
+          IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
               Navigator.pushNamed(context, '/settings');

@@ -10,6 +10,8 @@ import 'package:focus_app_project/screens/home_screen.dart';
 import 'package:focus_app_project/screens/addTask_screen.dart';
 import 'package:focus_app_project/screens/setting_screen.dart';
 import 'package:focus_app_project/screens/change_password_screen.dart';
+import 'package:focus_app_project/screens/completed_tasks_screen.dart';
+import 'package:focus_app_project/screens/calendar_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -75,9 +77,20 @@ class FocusApp extends StatelessWidget {
           }
           return TaskDetailScreen(task: args as TaskModel);
         },
+        '/completed_tasks': (context) => const CompletedTasksScreen(),
+        '/calendar': (context) => const CalendarScreen(),
       },
       onGenerateRoute: (settings) {
         print('onGenerateRoute called for: \\${settings.name}');
+        if (settings.name == '/category') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => CategoryTaskScreen(
+              categoryName: args['label'],
+              allTasks: args['tasks'],
+            ),
+          );
+        }
         return null; // Let onUnknownRoute handle it
       },
       onUnknownRoute: (settings) => MaterialPageRoute(

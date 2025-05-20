@@ -47,4 +47,15 @@ class TaskService {
       'createdAt': task.createdAt,
     });
   }
+
+  // Utility: Fix old tasks missing 'createdBy' field
+  static Future<void> fixOldTasksCreatedBy(String userId) async {
+    final snapshot = await _firestore.collection('tasks').get();
+    for (var doc in snapshot.docs) {
+      final data = doc.data();
+      if (data['createdBy'] == null || data['createdBy'] != userId) {
+        await doc.reference.update({'createdBy': userId});
+      }
+    }
+  }
 }

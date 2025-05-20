@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
+import '../services/task_service.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -84,7 +85,7 @@ class SettingsScreen extends StatelessWidget {
                       _SettingsTile(
                         icon: Icons.lock_outline,
                         title: 'Change password',
-                        onTap: () => _showComingSoon(context),
+                        onTap: () => Navigator.pushNamed(context, '/change_password'),
                         color: isDark ? Colors.white : Colors.black,
                       ),
                       _SettingsTile(

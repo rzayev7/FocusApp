@@ -38,10 +38,13 @@ dependencies:
 
   # ✅ Firebase packages
   firebase_core: ^3.13.0
-  firebase_auth: ^5.5.0
+  firebase_auth: ^5.5.3
   cloud_firestore: ^5.5.0
   firebase_analytics: ^11.4.5
+  google_sign_in: ^6.0.0
 
+  # Added from the code block
+  table_calendar: ^3.0.9
 
 dev_dependencies:
   flutter_test:
