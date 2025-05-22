@@ -23,6 +23,7 @@ class TaskModel {
 
   factory TaskModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    
 
     return TaskModel(
       id: doc.id,

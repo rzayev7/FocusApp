@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthProvider extends ChangeNotifier {
   User? _user;
   bool _isLoading = true;
+  
 
   AuthProvider() {
     _init();

@@ -53,12 +53,14 @@ class FocusApp extends StatelessWidget {
         fontFamily: 'Poppins',
         brightness: Brightness.light,
       ),
+      
       darkTheme: ThemeData(
         primaryColor: Colors.blue,
         scaffoldBackgroundColor: Colors.black,
         fontFamily: 'Poppins',
         brightness: Brightness.dark,
       ),
+
       themeMode: Provider.of<ThemeProvider>(context).themeMode,
       initialRoute: '/',
       routes: {
